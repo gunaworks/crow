@@ -22,7 +22,11 @@ authenticator = stauth.Authenticate(
 
 name, authentication_status, username = authenticator.login('main')
 if authentication_status:
-    authenticator.logout('Logout', 'main', key='unique_key')
+    try:
+        authenticator.logout('Logout') 
+    except Exception as err:
+        st.error(f'Unexpected exception {err}')
+        raise Exception(err)  # but not this, let's crash the app
     st.write(f'Welcome *{name}*')
     st.title('Some content')
 elif authentication_status is False:

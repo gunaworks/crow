@@ -4,26 +4,11 @@ cookie:
   name: some_cookie_name
 credentials:
   usernames:
-    abcef:
-      email: abc@bcd.com
+    charu:
+      email: charu@gmail.com
       logged_in: false
-      name: abcef
-      password: $2b$12$jf9otVkleQ8BW5QA/LQNd.uakBg5Kfghp0MC3HkRPZesA45ko0/iu
-    ccjoshi:
-      email: charujoshi100@gmail.com
-      logged_in: false
-      name: charu chandra joshi
-      password: $2b$12$SL5V2cL072D83SwevBOiROiHMLyAJVARYMP6X6Sjm9OY/xtF.ZRNK
-    dflsd:
-      email: sfdsj@dfsl.cd
-      logged_in: false
-      name: dlsfjs
-      password: $2b$12$u0UmqR8GVOP45ltff9MsketBDvMtsRK.tLq30vgSU.twZF4tJPgNm
-    jsmith:
-      email: jsmith@gmail.com
-      logged_in: false
-      name: John Smith
-      password: $2b$12$zHCtBLhTMl8omnk7zmzyCOs5kPNXUw/.8ilzOOtwV0m9FN68ObuE2
+      name: charu
+      password: $2b$12$VP1OZs34sDbHLvxh3y68Yu5lk3WsdI4DlCKnFQrPlGTCUz.ggcRae
     rbriggs:
       email: rbriggs@gmail.com
       logged_in: false
