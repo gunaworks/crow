@@ -14,7 +14,7 @@ class OAuthHandler:
         self.authorization_url = os.environ.get('AUTHORIZATION_URL')
         self.token_url = os.environ.get('TOKEN_URL')
         self.redirect_uri = os.environ.get('REDIRECT_URI')
-        self.scope = "user project"
+        self.scope = os.environ.get("user")
         self.oauth2 = OAuth2Component(self.client_id, self.client_secret, self.authorization_url, self.token_url,  self.redirect_uri, self.scope)
 
     def authorize(self):
