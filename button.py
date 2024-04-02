@@ -1,59 +1,50 @@
-import streamlit as st
-import ollama
 from github import Github
-from github import InputGitTreeElement
+import os
+import yaml
 
-# GitHub credentials
-GITHUB_TOKEN = "token_key"
-REPO_NAME = "Crowci"
-BRANCH_NAME = "main"
-FILE_PATH = "config.yaml"
+# GitHub authentication
+github_token = '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'
+repo_name = 'crowci'
+file_name = 'data.yaml'
+branch_name = 'main'
 
-# Create a title for the ap
-st.title("Project Crow")
+# Content to write to YAML file
+yaml_content = {
+    'key1': 'value1',
+    'key2': 'value2',
+    'key3': 'value3'
+}
 
-# Create a sidebar with input fields for prompts
-sidebar = st.sidebar
-user_input = sidebar.text_area("User Requirements")
-submit_generate_yaml = sidebar.button(label="Generate YAML")
-submit_push_to_github = sidebar.button(label="Push to GitHub")
+# Convert dictionary to YAML format
+yaml_data = yaml.dump(yaml_content)
 
-prompt_input = """
-You are a CI/CD specialist. You have a specialty in writing yaml files in defining the pipelines. 
-You have written over 10000+ yaml files defining the complete pipeline accurately and precisely that have been used by the users directly without any editing. 
-After the colon sign the user will explain his/her requirements. Your task is to generate a yaml file for the user based on their specific requirements such that 
-it can be used with GitHub actions.
-A sample yaml file is given below:
-...
-# yaml file ends
-"""
+# Initialize PyGithub with token
+g = Github(github_token)
 
-@st.cache
-def generate_yaml(user_input):
-    """Generates YAML code based on the provided prompts and returns it as a string."""
-    final_prompt = prompt_input + user_input
-    response = ollama.generate(model="codellama", prompt=final_prompt)
-    yaml_content = "\n".join(response["response"])
-    return yaml_content
+# Get the repository
+repo = g.get_repo(repo_name)
 
-def push_to_github(file_content):
-    """Pushes the generated YAML file to the GitHub repository."""
-    g = Github(GITHUB_TOKEN)
-    repo = g.get_repo(REPO_NAME)
-    contents = repo.get_contents(FILE_PATH, ref=BRANCH_NAME)
-    repo.update_file(FILE_PATH, "Pushing updated YAML file", file_content, contents.sha, branch=BRANCH_NAME)
+# Create a new branch
+branch = repo.create_git_ref(ref=f"refs/heads/{branch_name}", sha=repo.get_branch('main').commit.sha)
 
-if submit_generate_yaml:
-    # Generate the YAML file based on the prompt and other input
-    yaml_file = generate_yaml(user_input)
+# Create or update file
+try:
+    # Attempt to get the file
+    contents = repo.get_contents(file_name, ref=branch_name)
+    # Update the file
+    repo.update_file(contents.path, "committing yaml file", yaml_data, contents.sha, branch=branch_name)
+    print(f"File {file_name} updated successfully.")
+except Exception as e:
+    # Create the file if it doesn't exist
+    repo.create_file(file_name, "creating yaml file", yaml_data, branch=branch_name)
+    print(f"File {file_name} created successfully.")
 
-    # Display the generated YAML code in a code block for clarity
-    st.code(yaml_file, language="yaml")
+# Commit the changes
+commit_message = "Updated YAML data"
+repo.get_branch(branch_name).commit.commit.create_status(state="success", description="YAML file updated successfully", context="continuous-integration")
 
-if submit_push_to_github:
-    # Push the generated YAML file to the GitHub repository
-    g = Github(GITHUB_TOKEN)
-    repo = g.get_repo(REPO_NAME)
-    contents = repo.get_contents(FILE_PATH, ref=BRANCH_NAME)
-    repo.update_file(FILE_PATH, "Pushing updated YAML file", yaml_file, contents.sha, branch=BRANCH_NAME)
-    st.success("YAML file pushed to GitHub successfully!")
+# Merge pull request
+pull = repo.create_pull(title="Update YAML data", body="Auto-generated pull request to update YAML data", base=branch_name, head="master")
+pull.merge()
+
+print("Pull request merged successfully.")
