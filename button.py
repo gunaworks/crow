@@ -1,50 +1,115 @@
 from github import Github
-import os
+import streamlit as st
+import ollama
+import re
 import yaml
 
-# GitHub authentication
-github_token = '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'
-repo_name = 'crowci'
-file_name = 'data.yaml'
-branch_name = 'main'
+st.set_page_config(layout="wide")
+# Create a title for the app
+st.title("Project Crow")
 
-# Content to write to YAML file
-yaml_content = {
-    'key1': 'value1',
-    'key2': 'value2',
-    'key3': 'value3'
-}
+col1, col2 = st.columns(2, gap="large")
 
-# Convert dictionary to YAML format
-yaml_data = yaml.dump(yaml_content)
+with col1:
+    user_input = st.text_area("Prompt")
+    repo_link = st.text_input("Paste your GitHub link here")
+    submit_generate = st.button(label="Generate YAML")
+    submit_push = st.button(label="Push YAML to GitHub")
 
-# Initialize PyGithub with token
-g = Github(github_token)
+prompt_input = """
+You are a CI/CD specialist. You have a specialty in writing yaml files in defining the pipelines. 
+You have written over 10000+ yaml files defining the complete pipeline accurately and precisely that have been used by the users directly without any editing. 
+After the colon sign the user will explain his/her requirements. Your task is to generate a yaml file for the user based on their specific requirements such that 
+it can be used with GitHub actions.
+A sample yaml file is given below:
 
-# Get the repository
-repo = g.get_repo(repo_name)
+# Optional - The name of the workflow as it will appear in the "Actions" tab of the GitHub repository. If this field is omitted, the name of the workflow file will be used instead.
+name: learn-github-actions
+# Optional - The name for workflow runs generated from the workflow, which will appear in the list of workflow runs on your repository's "Actions" tab. This example uses an expression with the `github` context to display the username of the actor that triggered the workflow run. For more information, see "[AUTOTITLE](/actions/using-workflows/workflow-syntax-for-github-actions#run-name)."
+run-name: ${{ github.actor }} is learning GitHub Actions
 
-# Create a new branch
-branch = repo.create_git_ref(ref=f"refs/heads/{branch_name}", sha=repo.get_branch('main').commit.sha)
+# Specifies the trigger for this workflow. This example uses the `push` event, so a workflow run is triggered every time someone pushes a change to the repository or merges a pull request.  This is triggered by a push to every branch; for examples of syntax that runs only on pushes to specific branches, paths, or tags, see "[AUTOTITLE](/actions/reference/workflow-syntax-for-github-actions#onpushpull_requestpull_request_targetpathspaths-ignore)."
+on: [push]
 
-# Create or update file
-try:
-    # Attempt to get the file
-    contents = repo.get_contents(file_name, ref=branch_name)
-    # Update the file
-    repo.update_file(contents.path, "committing yaml file", yaml_data, contents.sha, branch=branch_name)
-    print(f"File {file_name} updated successfully.")
-except Exception as e:
-    # Create the file if it doesn't exist
-    repo.create_file(file_name, "creating yaml file", yaml_data, branch=branch_name)
-    print(f"File {file_name} created successfully.")
+# Groups together all the jobs that run in the `learn-github-actions` workflow.
+jobs:
 
-# Commit the changes
-commit_message = "Updated YAML data"
-repo.get_branch(branch_name).commit.commit.create_status(state="success", description="YAML file updated successfully", context="continuous-integration")
+# Defines a job named `check-bats-version`. The child keys will define properties of the job.
+  check-bats-version:
 
-# Merge pull request
-pull = repo.create_pull(title="Update YAML data", body="Auto-generated pull request to update YAML data", base=branch_name, head="master")
-pull.merge()
+# Configures the job to run on the latest version of an Ubuntu Linux runner. This means that the job will execute on a fresh virtual machine hosted by GitHub. For syntax examples using other runners, see "[AUTOTITLE](/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on)"
+    runs-on: ubuntu-latest
 
-print("Pull request merged successfully.")
+# Groups together all the steps that run in the `check-bats-version` job. Each item nested under this section is a separate action or shell script.
+    steps:
+
+# The `uses` keyword specifies that this step will run `v4` of the `actions/checkout` action. This is an action that checks out your repository onto the runner, allowing you to run scripts or other actions against your code (such as build and test tools). You should use the checkout action any time your workflow will use the repository's code.
+      - uses: actions/checkout@v4
+
+# This step uses the `actions/setup-node@v4` action to install the specified version of the Node.js. (This example uses version 14.) This puts both the `node` and `npm` commands in your `PATH`.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+# The `run` keyword tells the job to execute a command on the runner. In this case, you are using `npm` to install the `bats` software testing package.
+      - run: npm install -g bats
+
+# Finally, you'll run the `bats` command with a parameter that outputs the software version.
+      - run: bats -v
+# yaml file ends
+
+Based on this structure and keeping in mind the user's expectations, you have to generate a similar yaml file for the user. User will now give their requirements 
+after the colon.
+User Requirements: 
+"""
+
+def generate_yaml(prompt_input, user_input):
+    """Generates YAML code based on the provided prompts and returns it as a string."""
+    final_prompt = prompt_input + user_input
+    response = ollama.generate(model="codellama", prompt=final_prompt)
+    yaml_content = ""
+    for line in response["response"]:
+        yaml_content += line
+    return yaml_content
+
+def push_to_github(yaml_content, repo_link):
+    """Pushes the generated YAML content to the specified GitHub repository."""
+    # Extracting repository details from the link
+    username, reponame = repo_link.strip().split('/')[-2:]
+    
+    # GitHub authentication
+    github_token = 'token_key'  # Replace with your GitHub token
+    g = Github(github_token)
+    
+    # Get the repository
+    repo = g.get_user(username).get_repo(reponame)
+    
+    # Create or update file
+    yaml_data = yaml.safe_load(yaml_content)
+    file_name = yaml_data.get('name', 'workflow.yml')
+    branch_name = 'dukuru'
+    try:
+        # Attempt to get the file
+        contents = repo.get_contents(file_name, ref=branch_name)
+        # Update the file
+        repo.update_file(contents.path, "Committing YAML file", yaml_content, contents.sha, branch=branch_name)
+        st.success(f"YAML file '{file_name}' updated successfully.")
+    except Exception as e:
+        # Create the file if it doesn't exist
+        repo.create_file(file_name, "Creating YAML file", yaml_content, branch=branch_name)
+        st.success(f"YAML file '{file_name}' created successfully.")
+
+if submit_generate:
+    # Generate the YAML file based on the prompt and other input
+    yaml_file = generate_yaml(prompt_input, user_input)
+    # Display the generated YAML code in a code block for clarity
+    pattern = r'```(.*?)```'
+    matches = re.findall(pattern, yaml_file, re.DOTALL)
+    content = matches[0].strip()
+    st.code(content, language="yaml")
+
+if submit_push:
+    # Generate the YAML file based on the prompt and other input
+    yaml_content = generate_yaml(prompt_input, user_input)
+    # Push YAML content to GitHub
+    push_to_github(yaml_content, repo_link)
