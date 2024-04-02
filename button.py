@@ -72,10 +72,10 @@ def generate_yaml(prompt_input, user_input):
         yaml_content += line
     return yaml_content
 
-def push_to_github(yaml_content, repo_link):
+def push_to_github(yaml_content='config.yaml', repo_link='https://github.com/gunaworks/crowci'):
     """Pushes the generated YAML content to the specified GitHub repository."""
     # Extracting repository details from the link
-    username, reponame = repo_link.strip().split('/')[-2:]
+    username, reponame = repo_link.strip().split('/')[-1:]
     
     # GitHub authentication
     github_token = 'token_key'  # Replace with your GitHub token
@@ -107,9 +107,9 @@ if submit_generate:
     matches = re.findall(pattern, yaml_file, re.DOTALL)
     content = matches[0].strip()
     st.code(content, language="yaml")
-
+    
 if submit_push:
     # Generate the YAML file based on the prompt and other input
     yaml_content = generate_yaml(prompt_input, user_input)
     # Push YAML content to GitHub
-    push_to_github(yaml_content, repo_link)
+    push_to_github(yaml_content, repo_link='https://github.com/gunaworks/crowci')
