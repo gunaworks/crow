@@ -9,7 +9,7 @@ REPO_NAME = "Crowci"
 BRANCH_NAME = "main"
 FILE_PATH = "config.yaml"
 
-# Create a title for the app
+# Create a title for the ap
 st.title("Project Crow")
 
 # Create a sidebar with input fields for prompts
