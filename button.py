@@ -112,4 +112,4 @@ if submit_push:
     # Generate the YAML file based on the prompt and other input
     yaml_content = generate_yaml(prompt_input, user_input)
     # Push YAML content to GitHub
-    push_to_github(yaml_content, repo_link='https://github.com/gunaworks/crowci')
+    push_to_github('config.yaml', repo_link='https://github.com/gunaworks/crowci')
