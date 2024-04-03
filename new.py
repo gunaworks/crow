@@ -2,13 +2,13 @@ import streamlit as st
 from github import Github
 
 # GitHub credentials
-github_token = "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"
-repository_name = "Credit-card-default-prediction"
+github_token = "XXXXXX"
+repository_name = "gunaworks/crowci"
 file_name = "config.yaml"
 
 # Authenticate to GitHub
 g = Github(github_token)
-repo = g.get_user().get_repo(repository_name)
+repo = g.get_repo(repository_name)
 
 # Streamlit UI
 st.title("GitHub YAML Pusher")
