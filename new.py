@@ -2,7 +2,11 @@ import streamlit as st
 from github import Github
 
 # GitHub credentials
-github_token = "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"
+<<<<<<< HEAD
+#github_token = "xxxx"
+=======
+github_token = "xxxx"
+>>>>>>> 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
 repository_name = "gunaworks/crowci"
 file_name = "config.yaml"
 
