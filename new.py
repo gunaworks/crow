@@ -3,7 +3,7 @@ from github import Github
 
 # GitHub credentials
 github_token = "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"
-repository_name = "Credit-card-default-prediction"
+repository_name = "dukuru"
 file_name = "config.yaml"
 
 # Authenticate to GitHub
