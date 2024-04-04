@@ -3,10 +3,10 @@ from github import Github
 
 # GitHub credentials
 <<<<<<< HEAD
-github_token = "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"
+#github_token = "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"
 =======
 github_token = "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"
->>>>>>> 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
+>>>>>>> 
 repository_name = "gunaworks/crowci"
 file_name = "config.yaml"
 
