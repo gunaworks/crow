@@ -6,7 +6,7 @@ from github import Github
 #github_token = "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"
 ##=======
 github_token = "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"
-##>>>>>>> fce8463773b959f06ae3e4c54afa2d1576182edd
+##>>>>>>> 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
 repository_name = "gunaworks/crowci"
 file_name = "config.yaml"
 
