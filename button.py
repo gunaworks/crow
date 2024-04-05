@@ -2,7 +2,7 @@ import streamlit as st
 from github import Github
 
 # GitHub credentials
-github_token = "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"
+github_token = "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"
 repository_name = "powerbi-Dashboards"
 file_name = "config.yaml"
 
