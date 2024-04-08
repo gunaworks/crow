@@ -2,3 +2,8 @@
 __pycache__/
 .env
 config.yaml
+oll.py
+oll.py~
+temp-ui.py.un~
+temp-ui.py~
+temp-ui.py

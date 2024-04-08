@@ -2,14 +2,18 @@ import streamlit as st
 import ollama
 import re
 
-
+st.set_page_config(layout="wide")
 # Create a title for the app
 st.title("Project Crow")
 
-# Create a sidebar with input fields for prompts
-sidebar = st.sidebar
-user_input = sidebar.text_input("Prompt")
-submit = sidebar.button(label="Submit")
+
+col1, col2 = st.columns(2, gap="large")
+
+with col1:
+  user_input = st.text_area("Prompt")
+  submit = st.button(label="Submit")
+  
+
 
 prompt_input = """
 You are a CI/CD specialist. You have a specialty in writing yaml files in defining the pipelines. 
@@ -58,37 +62,25 @@ Based on this structure and keeping in mind the user's expectations, you have to
 after the colon.
 User Requirements: 
 """
-# def generate_yaml(prompt_input, user_input):
-#     final_prompt = prompt_input + user_input
-#     response = ollama.generate(model="codellama", prompt=final_prompt, stream=True)
-# # Update the output box with the generated YAML file
-# def update_output():
-#     # Generate the YAML file based on the prompt and other input
-#     yaml_file = generate_yaml(prompt_input, user_input)
-    
-#     # Update the output box with the new content
-#     st.text_area()
-
 def generate_yaml(prompt_input, user_input):
   """Generates YAML code based on the provided prompts and returns it as a string."""
   final_prompt = prompt_input + user_input
-  response = ollama.generate(model="codellama", prompt=final_prompt)
+  response = ollama.generate(model="codellama", prompt=final_prompt, stream=True)
   yaml_content = ""
   for line in response["response"]:
     yaml_content += line#.decode("utf-8")
   return yaml_content
+with col2:
+    if submit:
+        # Generate the YAML file based on the prompt and other input
+        yaml_file = generate_yaml(prompt_input, user_input)
 
-if submit:
-  # Generate the YAML file based on the prompt and other input
-  yaml_file = generate_yaml(prompt_input, user_input)
-
-  # Display the generated YAML code in a code block for clarity
-  
-  pattern = r'```(.*?)```'
-  matches = re.findall(pattern, yaml_file, re.DOTALL)
+        # Display the generated YAML code in a code block for clarity
+        
+        pattern = r'```(.*?)```'
+        matches = re.findall(pattern, yaml_file, re.DOTALL)
 
 
-  content = matches[0].strip()
-  # Print the extracted content
-  st.code(content, language="yaml")
-  st.code(yaml_file, language="yaml")
+        content = matches[0].strip()
+        # Print the extracted content
+        st.code(content, language="yaml")
