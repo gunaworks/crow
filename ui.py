@@ -10,13 +10,17 @@ def ui(access_token):
 
     col1, middle_gap, col2 = st.columns([1.5, .5 , 3], gap="large")
     
+    if 'yaml_content' not in st.session_state:
+        st.session_state.yaml_content = ""
+
     with col1:
         st.title("Input")
         user_input = st.text_area(label="Input",height=250 ,key="InputBox", placeholder="Ask CrowCI...", label_visibility="hidden")
         col11, col12 = st.columns(2, gap="small")
         with col12:
             submit = st.button(label="Submit")
-            
+
+
     with col2:
         col21, col22 = st.columns(2, gap="small")
         yaml_content = ""
@@ -24,22 +28,12 @@ def ui(access_token):
             st.title(":blue[YAML]")
         with col22:
             st.subheader("")
-            push_to_git = st.button(label="Push to Github")  
-        stream_output=""
+            push_to_github = st.button(label="Push to Github")  
         if submit:
-            stream_output = st.write_stream(generate(initial_prompt, user_input))
-            # st.write(len(stream_output))
-            # st.write("Yaml Here")
-            # st.write(stream_output)
-            # if push_to_git:
-            #     st.write("HHHHHHHHHH")
-            #     push(access_token, yaml_content)
-            #     st.write("HIIHIHIIHIHIIH")
-        # st.write("This content is empty ____>")
-        yaml_content = stream_output
-        st.write(yaml_content)
-        if push_to_git:
-            st.write("Length debuggggg")
-            st.write(len(yaml_content))
-            st.write(yaml_content)
-            st.warning("YAML file empty!")
+            st.session_state.yaml_content = st.write_stream(generate(initial_prompt, user_input))
+
+        if push_to_github:
+            if len(st.session_state.yaml_content):
+                push(access_token, yaml_content = st.session_state.yaml_content)
+            else:
+                st.warning("YAML file empty!")
