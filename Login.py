@@ -7,7 +7,7 @@ st.set_page_config(
     page_title="Login",
 )
 st.sidebar.header("Login")
-
+#new
 hashed_passwords = stauth.Hasher(['abc','def']).generate()
 
 import yaml
