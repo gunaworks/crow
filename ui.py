@@ -26,6 +26,7 @@ def ui(access_token):
         yaml_content = ""
         with col21:
             st.title(":blue[YAML]")
+        repository_link = st.text_input(label="Repository Name", placeholder = "Link to repository...", label_visibility = "collapsed")
         with col22:
             st.subheader("")
             push_to_github = st.button(label="Push to Github")  
@@ -33,7 +34,9 @@ def ui(access_token):
             st.session_state.yaml_content = st.write_stream(generate(initial_prompt, user_input))
 
         if push_to_github:
-            if len(st.session_state.yaml_content):
-                push(access_token, yaml_content = st.session_state.yaml_content)
+            if len(st.session_state.yaml_content) and len(repository_link):
+                push(access_token, yaml_content = st.session_state.yaml_content, repository_link = repository_link)
+            elif len(st.session_state.yaml_content) == 0:
+                st.warning("YAML file empty! Generate response by clicking on submit.")
             else:
-                st.warning("YAML file empty!")
+                st.warning("Invalid Repository!")
