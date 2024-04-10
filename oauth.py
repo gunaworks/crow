@@ -14,7 +14,7 @@ class OAuthHandler:
         self.authorization_url = os.environ.get('AUTHORIZATION_URL')
         self.token_url = os.environ.get('TOKEN_URL')
         self.redirect_uri = os.environ.get('REDIRECT_URI')
-        self.scope = "user project"
+        self.scope = "user repo project admin"
         self.oauth2 = OAuth2Component(self.client_id, self.client_secret, self.authorization_url, self.token_url,  self.redirect_uri, self.scope)
 
     def authorize(self):
@@ -30,6 +30,17 @@ class OAuthHandler:
                 st.session_state.token = result.get('token')
                 st.rerun()
                 return result['token']
+    
+    # def set_token(self, token):
+    #     st.secrets["token"] = token
+    
+    # def get_token(self):
+    #     if 'token' not in st.session_state and 'token' not in st.secrets:
+    #         return None
+    #     elif 'token' not in st.secrets:
+    #         return st.session_state['token']
+    #     else:
+    #         return st.secrets.get('token')
 
     def get_token(self):
         if 'token' not in st.session_state:
