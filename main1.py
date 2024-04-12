@@ -1,39 +1,45 @@
 import streamlit as st
+# from oauth import OAuthHandler
+from ui import ui
+import os
 from oauth import OAuthHandler
 import extra_streamlit_components as stx
+import datetime
+# Import other necessary modules or functions
+oauth_handler = OAuthHandler() 
+@st.cache_resource(experimental_allow_widgets=True)
+def get_manager():
+    return stx.CookieManager()
 
-# Initialize OAuth handler and CookieManager
-oauth_handler = OAuthHandler()
-cookie_manager = stx.CookieManager()
-
+cookie_manager = get_manager()
+# Initialize OAuth handler
+def set_logout():
+    st.session_state.logout = True
+    cookie_manager.delete("token")
 # Main function
 def main():
-    # Retrieve token from cookie manager
-    token = cookie_manager.get("token")
-
-    # Check if 'token' is not in session state, if not initialize it
-    if 'token' not in st.session_state:
-        st.session_state.token = None
-
-    # If token exists in session state, display user information
-    if st.session_state.token:
-        st.title("Prompt to YAML")
-        st.json(st.session_state.token)
-        user_info = oauth_handler.get_user_info(st.session_state.token)
+    token = oauth_handler.get_token()
+    token_val = cookie_manager.get("token")
+    if 'logout' not in st.session_state:
+        st.session_state.logout = False
+    if token:
+        cookie_manager.set("token", token)
+    if token and st.session_state.logout == False:
+        # oauth_handler.set_token(token)
+        # Call other functions or components here
+        user_info = oauth_handler.get_user_info(token)
+        access_token = token['access_token']
         if user_info:
-            st.title("User Information")
-            st.write(user_info['name'])
-    
-    # If no token exists in session state, attempt to retrieve it
-    else:
-        token = oauth_handler.get_token()
-        if token:
-            # Set token in session state and cookie
-            st.session_state.token = token
-            cookie_manager.set("token", token)
-        else:
-            # If token retrieval fails, initiate OAuth authorization flow
+            ui(access_token)
+            st.button("Logout", on_click=set_logout)
+    elif token_val and st.session_state.logout == False:
+        try:
+            access_token = token_val['access_token']
+            ui(access_token)
+            st.button("Logout", on_click=set_logout)
+        except Exception as e:
             oauth_handler.authorize()
-
-if __name__ == "__main__":
+    else:
+        oauth_handler.authorize()
+if __name__ == "_main_":
     main()
