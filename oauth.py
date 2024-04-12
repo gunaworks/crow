@@ -16,7 +16,6 @@ class OAuthHandler:
         self.redirect_uri = os.environ.get('REDIRECT_URI')
         self.scope = "user repo project admin"
         self.oauth2 = OAuth2Component(self.client_id, self.client_secret, self.authorization_url, self.token_url,  self.redirect_uri, self.scope)
-
     def authorize(self):
         with st.container():
             col1, col2, col3 = st.columns([1.5, 2.5, 1])
@@ -30,17 +29,6 @@ class OAuthHandler:
                 st.session_state.token = result.get('token')
                 st.rerun()
                 return result['token']
-    
-    # def set_token(self, token):
-    #     st.secrets["token"] = token
-    
-    # def get_token(self):
-    #     if 'token' not in st.session_state and 'token' not in st.secrets:
-    #         return None
-    #     elif 'token' not in st.secrets:
-    #         return st.session_state['token']
-    #     else:
-    #         return st.secrets.get('token')
 
     def get_token(self):
         if 'token' not in st.session_state:
@@ -51,9 +39,6 @@ class OAuthHandler:
         token_string = access_token.get('access_token')
         headers = {"Authorization": f"token {token_string}"}
         response = requests.get("https://api.github.com/user", headers=headers)
-        # st.write(headers)  # Debugging
-        # st.write(response.status_code)  # Debugging
-        # st.write(response.content)  # Debugging
         if response.status_code == 200:
             return response.json()
         else:
