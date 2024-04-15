@@ -70,3 +70,5 @@ langchain-community==0.0.32
 langchain-core==0.1.42
 langchain-openai==0.13
 langchain-text-splitters==0.0.1
+openai==1.17.1
+ollama==0.1.8
