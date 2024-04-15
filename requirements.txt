@@ -65,3 +65,8 @@ typing-extensions==4.10.0
 tzdata==2024.1
 urllib3==2.2.1
 watchdog==4.0.0
+langchain==0.1.16
+langchain-community==0.0.32
+langchain-core==0.1.42
+langchain-openai==0.13
+langchain-text-splitters==0.0.1
