@@ -1,6 +1,6 @@
 import streamlit as st
 from oauth import OAuthHandler
-from ui import ui
+from home import ui
 # Import other necessary modules or functions
 
 # Initialize OAuth handler
@@ -19,5 +19,5 @@ def main():
     else:
         oauth_handler.authorize()
 
-if __name__ == "__main__":
+if __name__ == "_main_":
     main()
