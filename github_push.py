@@ -2,9 +2,9 @@ import streamlit as st
 from github import Github
 
 # GitHub credentials
-github_token = "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"
+github_token = "access token"
 repository_name = "gunaworks/crowci"
-file_name = "config.yaml"
+file_name = ".github/workflows/config.yaml"
 
 # Authenticate to GitHub
 g = Github(github_token)
@@ -24,5 +24,5 @@ if st.button("Push to GitHub"):
         repo.update_file(file_name, "Updated YAML file", yaml_content, contents.sha)
         st.success("YAML file updated successfully!")
     except Exception as e:
-        repo.create_file(file_name, "Created YAML file", yaml_content).join('./.github/workflows/my-workflow')
+        repo.create_file(file_name, "Created YAML file", yaml_content)
         st.success("YAML file created successfully!")
