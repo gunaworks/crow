@@ -6,7 +6,6 @@ from github import Github
 def push(access_token, yaml_content, repository_link):
     github_token = access_token
     file_name = ".github/workflows/config.yaml"
-
     #Parse the repository link to get the repository name
     parsed_url = urlparse(repository_link)
     path_components = parsed_url.path.split('/')

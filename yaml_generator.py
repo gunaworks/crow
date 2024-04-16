@@ -1,16 +1,3 @@
-# import ollama
-# import streamlit as st
-
-# def generate(initial_prompt, user_input):
-#     prompt = initial_prompt + user_input
-#     stream = ollama.generate(
-#         model = "codellama",
-#         prompt = prompt,
-#         stream = True,
-#         )
-#     for chunk in stream:
-#         yield chunk['response']
-
 import os
 from dotenv import load_dotenv
 from langchain_openai import OpenAI
@@ -22,7 +9,7 @@ load_dotenv()
 
 key = os.getenv("OPENAI_API_KEY")
 
-llm = OpenAI(model="gpt-3.5-turbo-instruct", api_key=key)#, temperature=0.8)
+llm = OpenAI(model="gpt-3.5-turbo-instruct", api_key=key)
 
 prompt = ChatPromptTemplate.from_messages([
     ("system", """

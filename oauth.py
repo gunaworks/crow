@@ -4,7 +4,6 @@ from streamlit_oauth import OAuth2Component
 import streamlit as st
 import requests
 
-# Load environment variables
 load_dotenv()
 
 class OAuthHandler:
@@ -14,7 +13,7 @@ class OAuthHandler:
         self.authorization_url = os.environ.get('AUTHORIZATION_URL')
         self.token_url = os.environ.get('TOKEN_URL')
         self.redirect_uri = os.environ.get('REDIRECT_URI')
-        self.scope = "user repo project admin"
+        self.scope = "user repo project workflow"
         self.oauth2 = OAuth2Component(self.client_id, self.client_secret, self.authorization_url, self.token_url,  self.redirect_uri, self.scope)
     def authorize(self):
         st.title("")
