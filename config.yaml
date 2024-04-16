@@ -1,1 +1,24 @@
-This is a test yaml
+cookie:
+  expiry_days: 30
+  key: some_signature_key
+  name: some_cookie_name
+credentials:
+  usernames:
+    charu:
+      email: charu@gmail.com
+      logged_in: false
+      name: charu
+      password: $2b$12$VP1OZs34sDbHLvxh3y68Yu5lk3WsdI4DlCKnFQrPlGTCUz.ggcRae
+    dukuru:
+      email: dukuru121@gmail.com
+      logged_in: false
+      name: venky
+      password: $2b$12$ZOKwqOvrH1yW9PeNyInUQeLki44Xq6yeo5JX97XratV9phqSdV52O
+    rbriggs:
+      email: rbriggs@gmail.com
+      logged_in: false
+      name: Rebecca Briggs
+      password: $2b$12$BhvTZAGzYQ3GpbfCxWG7bOZKOlrs4FwtJiuJGq/hevtvLpH5wxTAe
+preauthorized:
+  emails:
+  - melsby@gmail.com
