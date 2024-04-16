@@ -1,13 +1,1 @@
-cookie:
-  expiry_days: 30
-  key: '123'
-  name: vfbk
-credentials:
-  usernames:
-    dgfnm:
-      email: dukuru121@gmail.com
-      logged_in: false
-      password: dfsgdh
-preauthorized:
-  emails:
-  - dukuru121@gmail.com
+hi
