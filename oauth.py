@@ -20,7 +20,8 @@ class OAuthHandler:
         st.title("")
         st.title("")
         st.markdown("<h1 style='text-align: center; color: #CFF089;'>Welcome to CrowCI</h1>", unsafe_allow_html=True)
-        st.header("Login with your GitHub account to continue...")
+        st.markdown("<h2 style='text-align: center; color: white;'>Login with your GitHub account to continue...</h2>", unsafe_allow_html=True)
+        
         st.title("")
         col1, col2, col3 = st.columns([2,2,1])
         with col2:

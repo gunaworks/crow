@@ -1,7 +1,7 @@
 from yaml_generator import generate
 import streamlit as st
 from github_push import push
-
+from streamlit_extras.stylable_container import stylable_container
 # initial_prompt = """ You are a CI specialist. You are only allowed to respond by giving relevant YAML
 #     Pipeline code. You cannot respond with anything else. Only generate most basic YAML pipeline code according to user requirements. Add information according to user and not on your own. Add details as the user provides. The user will give you input after :
 # User Requirements: """
@@ -9,15 +9,14 @@ initial_prompt = "Hi"
 def ui(access_token):
     st.set_page_config(layout="wide")
 
-    left_padding, col1, mid_gap, col2, right_padding = st.columns([1, 1.6 ,.01, 2.5, .5], gap="large")
+    left_padding, col1, mid_gap, col2, right_padding = st.columns([.8, 1.8 ,.01, 2.5, .4], gap="large")
     
     if 'yaml_content' not in st.session_state:
         st.session_state.yaml_content = ""
 
     with col1:
-        col11, col12 = st.columns([.8,2])
-        with col12:
-            st.title("Input")
+        
+        st.markdown("<h1 style='text-align: center; color: #6699CC;'>Input</h1>", unsafe_allow_html=True)
         with st.form(key="Input", clear_on_submit=False, border=True):
             user_input = st.text_area(label="Input",height=250 ,key="InputBox", placeholder="Ask CrowCI...", label_visibility="hidden")
             form_front_gap, form_submit_col =  st.columns([3,1])
@@ -26,20 +25,35 @@ def ui(access_token):
 
 
     with col2:
-        st.markdown("<h1 style='text-align: center; color: #CFF089;'>YAML</h1>", unsafe_allow_html=True)
-        repository_link = st.text_input(label="Repository Name", key = "RepositoryLink", 
+        st.markdown("<h1 style='text-align: center; color:#6699CC;'>YAML</h1>", unsafe_allow_html=True)
+        
+    
+        with st.container(height=300, border=True):
+            st.markdown("<h6 style='text-align: center; color: white;'>Pipeline generated below...</h6>", unsafe_allow_html=True)
+            st.write("")
+            # st.divider()
+            if submit:
+                # st.session_state.yaml_content = st.code(generate(user_input=user_input))
+                st.session_state.yaml_content = generate(user_input)
+                with stylable_container(
+                "codeblock",
+                """
+                code {
+                    white-space: pre-wrap !important;
+                }
+                """,
+                ):
+                    st.code(
+                        st.session_state.yaml_content, language = "yaml"
+                    )
+
+        col21, col22 = st.columns([3.2,1])
+        with col21:
+            repository_link = st.text_input(label="Repository Name", key = "RepositoryLink", 
                                         placeholder = "Link to repository...", 
                                         label_visibility = "collapsed")
-    
-        with st.form(key="Output", clear_on_submit=False, border=True):
-            st.write("YAML Pipeline will be generated here...")
-    
-            if submit:
-                st.session_state.yaml_content = generate(user_input=user_input)
-                st.write(st.session_state.yaml_content)
-    
-            push_to_github = st.form_submit_button(label="Push to Github")  
-
+        with col22:
+            push_to_github = st.button(label="Push to Github") 
         if push_to_github:
             if len(st.session_state.yaml_content) and len(repository_link):
                 push(access_token, yaml_content = st.session_state.yaml_content, repository_link = repository_link)
