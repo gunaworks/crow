@@ -17,19 +17,18 @@ class OAuthHandler:
         self.scope = "user repo project admin"
         self.oauth2 = OAuth2Component(self.client_id, self.client_secret, self.authorization_url, self.token_url,  self.redirect_uri, self.scope)
     def authorize(self):
-        with st.container():
-            col1, col2, col3 = st.columns([1.5, 2.5, 1])
-            with col2:
-                st.title("")
-                st.title("")
-                st.title(":blue[Hello!]")
-                st.title("Login with")
-                result = self.oauth2.authorize_button("GitHub", self.redirect_uri, self.scope)
-            if result and 'token' in result:
-                st.session_state.token = result.get('token')
-                st.rerun()
-                return result['token']
-
+        st.title("")
+        st.title("")
+        st.markdown("<h1 style='text-align: center; color: #CFF089;'>Welcome to CrowCI</h1>", unsafe_allow_html=True)
+        st.header("Login with your GitHub account to continue...")
+        st.title("")
+        col1, col2, col3 = st.columns([2,2,1])
+        with col2:
+            result = self.oauth2.authorize_button("Login", self.redirect_uri, self.scope)
+        if result and 'token' in result:
+            st.session_state.token = result.get('token')
+            st.rerun()
+            return result['token']
     def get_token(self):
         if 'token' not in st.session_state:
             return None
