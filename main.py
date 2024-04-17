@@ -1,6 +1,6 @@
 import streamlit as st
 from oauth import OAuthHandler
-from home import ui
+from home import home_page
 
 oauth_handler = OAuthHandler()
 
@@ -8,10 +8,8 @@ oauth_handler = OAuthHandler()
 def main():
     token = oauth_handler.get_token()
     if token:
-        user_info = oauth_handler.get_user_info(token)
         access_token = token['access_token']
-        if user_info:
-            ui(access_token)
+        home_page(access_token)
     else:
         oauth_handler.authorize()
 
