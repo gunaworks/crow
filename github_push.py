@@ -1,7 +1,22 @@
 import streamlit as st
 from urllib.parse import urlparse
 from github import Github
+from github.Repository import Repository
+import github
+import re
 
+##############################################################################################################
+def does_object_exists_in_branch(repo: Repository, branch: str, object_path: str) -> bool:
+    try:
+        repo.get_contents(object_path, branch)
+        return True
+    except github.UnknownObjectException:
+        return False
+
+##############################################################################################################
+def link_validator(respository_link):
+    return re.search("https://github.com/[\w-]+/[\w-]+$", respository_link)
+    
 ##############################################################################################################
 def parse_repository(repository_link):
     parsed_url = urlparse(repository_link)
@@ -29,13 +44,13 @@ def get_repository(github_token, repository_name):
 ##############################################################################################################
 def push_yaml_to_github(access_token, yaml_content, repository_link):
     github_token = access_token
-    file_name = ".github/workflows/config.yaml"
-    repository_name = parse_repository(repository_link)
-    repository = get_repository(github_token, repository_name)
-    try:
-        update_config_file(repository, file_name, yaml_content)
-    except Exception as e:
-        if "Not Found" in str(e):
-            create_config_file(repository, file_name, yaml_content)
+    file_name = ".github/workflow/config.yaml"
+    if link_validator(repository_link):
+        repository_name = parse_repository(repository_link)
+        repository = get_repository(github_token, repository_name)
+        if does_object_exists_in_branch(repository, "main", file_name):
+            update_config_file(repository, file_name, yaml_content)
         else:
-            raise e
+            create_config_file(repository, file_name, yaml_content)
+    else:
+        st.warning("Invalid Repository Link!")
