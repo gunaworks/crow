@@ -41,5 +41,5 @@ def home_page(access_token):
             elif len(st.session_state.yaml_content) == 0:
                 st.warning("YAML file empty! Generate response by clicking on submit.")
             else:
-                st.warning("Invalid Repository!")
+                st.warning("Enter the repository link.")
 #######################################################################################################################################
