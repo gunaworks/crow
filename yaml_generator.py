@@ -1,7 +1,7 @@
+"""This module is used to generate the yaml file using gpt-3.5-turbo-instruct"""
 import os
 from dotenv import load_dotenv
 from langchain_openai import OpenAI
-import streamlit as st
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 
@@ -29,5 +29,6 @@ output_parser = StrOutputParser()
 chain = prompt | llm | output_parser
 
 def generate(user_input):
+    """generate the model response"""
     response = chain.invoke({"input": user_input})
     return response
