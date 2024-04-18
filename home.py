@@ -2,7 +2,7 @@
 import streamlit as st
 from streamlit_extras.stylable_container import stylable_container
 from yaml_generator import generate
-from github_push import push_yaml_to_github
+from github_push import push_to_github
 
 def home_page(access_token):
     """Displays the ui after oauth."""
@@ -42,10 +42,10 @@ def home_page(access_token):
                                             placeholder = "Link to repository...",
                                             label_visibility = "collapsed")
         with push_to_github_column:
-            push_to_github = st.button(label="Push to Github")
-        if push_to_github:
+            push_to_github_button = st.button(label="Push to Github")
+        if push_to_github_button:
             if len(st.session_state.yaml_content) > 0 and len(repository_link) > 0:
-                push_yaml_to_github(access_token, yaml_content = st.session_state.yaml_content,
+                push_to_github(access_token, yaml_content = st.session_state.yaml_content,
                                     repository_link = repository_link)
             elif len(st.session_state.yaml_content) == 0:
                 st.warning("YAML file empty! Generate response by clicking on submit.")

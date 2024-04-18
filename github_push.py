@@ -49,7 +49,7 @@ def get_repository(github_token, repository_name):
     return repository
 
 ##############################################################################
-def push_yaml_to_github(access_token, yaml_content, repository_link):
+def push_to_github(access_token, yaml_content, repository_link):
     """Checks for validity of link and repository object and then pushes the yaml"""
     github_token = access_token
     file_name = ".github/workflows/config.yaml"
