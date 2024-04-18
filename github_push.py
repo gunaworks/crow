@@ -52,7 +52,7 @@ def get_repository(github_token, repository_name):
 def push_to_github(access_token, yaml_content, repository_link):
     """Checks for validity of link and repository object and then pushes the yaml"""
     github_token = access_token
-    file_name = ".github/workflows/config.yaml"
+    file_name = ".github/workflows/config.yml"
     if link_validator(repository_link):
         repository_name = parse_repository(repository_link)
         repository = get_repository(github_token, repository_name)

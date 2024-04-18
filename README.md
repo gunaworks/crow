@@ -11,5 +11,7 @@ A streamlit app for generating CI/CD pipelines for your workflow. It can be depl
     * CLIENT_SECRET="You GitHub OAuth App's Client Secret"
     * REDIRECT_URI=http://localhost:8501/component/streamlit_oauth.authorize_button/index.html
     * OPENAI_API_KEY="Your openai api key"
-### Install the requirements using pip install -r requirements.txt.
-### Run the app using streamlit run main.py.
+### Install the requirements.
+    * pip install -r requirements.txt.
+### Run the app.
+    * streamlit run main.py.
