@@ -8,7 +8,7 @@ def home_page(access_token):
     """Displays the ui after oauth."""
     st.set_page_config(layout="wide")
     [left_padding, input_column, mid_gap,
-     yaml_output_column,right_padding] = st.columns([.3, 1.8 ,.01, 2.5, .5], gap="large")
+     yaml_output_column,right_padding] = st.columns([.8, 1.8 ,.01, 2.5, .3], gap="large")
     if 'yaml_content' not in st.session_state:
         st.session_state.yaml_content = ""
 #################################################################################################
