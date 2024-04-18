@@ -1,0 +1,46 @@
+```yaml
+name: docker-build-and-test
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  build-image:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build and push Docker image
+        run: |
+          docker build -t my-app:latest .
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker push my-app:latest
+
+  run-integration-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Pull Docker image
+        run: docker pull my-app:latest
+
+      - name: Run integration tests
+        run: docker run my-app:latest pytest
+        continue-on-error: true
+
+      - name: Archive test results
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-results
+          path: test-results/
+
+  deploy-staging:
+    runs-on: [self-hosted, custom-runner]
+
+    steps:
+      - name: Deploy to staging
+        run: ./deploy.sh
+```
