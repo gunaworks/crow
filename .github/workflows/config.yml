@@ -1,6 +1,5 @@
 
 
-
 name: branch-protection.yml
 
 on:
@@ -15,18 +14,28 @@ jobs:
         node-version: [20]
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       - name: Check for code changes
-        if: github.event_name == 'push'
-        run: echo "Checking for code changes..."
+        run: git diff --name-only ${{ github.event.before }} ${{ github.sha }} > changes.txt
 
       - name: Enforce code coverage report
-        if: github.event_name == 'push'
-        run: echo "Enforcing code coverage report..."
+        if: ${{ steps.check_changes.outputs.has_changes == 'true' }}
+        run: enforce-code-coverage.sh
 
       - name: Verify code linting and unit tests
-        if: github.event_name == 'push'
-        run: echo "Verifying code linting and unit tests..."
+        if: ${{ steps.check_changes.outputs.has_changes == 'true' }}
+        run: verify-linting-and-unit-tests.sh
 
       - name: Complete job
-        if: github.event_name == 'push'
-        run: echo "Job completed successfully!"
+        if: ${{ steps.check_changes.outputs.has_changes == 'true' }}
+        run: complete-job.sh
+
+      - name: Set up job
+        if: ${{ steps.check_changes.outputs.has_changes == 'false' }}
+        run: setup-job.sh
+
+      - name: Check for code changes
+        id: check_changes
+        run:
