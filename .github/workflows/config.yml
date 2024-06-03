@@ -5,7 +5,8 @@ name: branch-protection.yml
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   enforce-branch-rules:
@@ -15,19 +16,12 @@ jobs:
         node-version: [20]
     steps:
       - name: Check for code changes
-        if: github.event_name == 'push'
-        run: |
-          git diff-tree --no-commit-id --name-only -r ${{ github.sha }} | grep -q ".*\.js$"
-        id: check-changes
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Enforce code coverage report
-        if: steps.check-changes.outputs.return-code == 0
-        run: |
-          # insert code coverage report enforcement here
+        run: npm run coverage
       - name: Verify code linting and unit tests
-        if: steps.check-changes.outputs.return-code == 0
-        run: |
-          # insert code linting and unit tests verification here
+        run: npm run lint && npm run test
       - name: Complete job
-        if: steps.check-changes.outputs.return-code == 0
-        run: |
-          # insert code to complete job here
+        run: echo "Job completed successfully"
