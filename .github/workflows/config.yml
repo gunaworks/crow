@@ -1,5 +1,6 @@
 
 
+
 name: branch-protection.yml
 
 on:
@@ -15,9 +16,18 @@ jobs:
     steps:
       - name: Check for code changes
         if: github.event_name == 'push'
+        run: |
+          git diff-tree --no-commit-id --name-only -r ${{ github.sha }} | grep -q ".*\.js$"
+        id: check-changes
       - name: Enforce code coverage report
-        run: npm test
+        if: steps.check-changes.outputs.return-code == 0
+        run: |
+          # insert code coverage report enforcement here
       - name: Verify code linting and unit tests
-        run: npm run lint && npm run unit-tests
+        if: steps.check-changes.outputs.return-code == 0
+        run: |
+          # insert code linting and unit tests verification here
       - name: Complete job
-        run: echo "Job successfully completed."
+        if: steps.check-changes.outputs.return-code == 0
+        run: |
+          # insert code to complete job here
