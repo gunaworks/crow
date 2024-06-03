@@ -1,31 +1,30 @@
 
 
-name: branch-protection.yml
 
+name: branch-protection.yml
 on:
   push:
     branches: [main]
-
 jobs:
   enforce-branch-rules:
     runs-on: windows-latest
     strategy:
       matrix:
         node-version: [20]
-    if: github.event_name == 'push' && contains(github.event.head_commit.modified, 'code')
     steps:
-      - name: set up job
+      - name: Check for code changes
+        if: github.event_name == 'push' && github.event.head_commit.modified != 'null'
         run: |
-          # insert appropriate commands for setting up job here
-      - name: check for code changes
+          # insert code to run if there are changes
+      - name: Enforce code coverage report
+        if: github.event_name == 'push' && github.event.head_commit.modified != 'null'
         run: |
-          # insert appropriate commands for checking code changes here
-      - name: enforce code coverage report
+          # insert code to enforce code coverage report
+      - name: Verify code linting and unit tests
+        if: github.event_name == 'push' && github.event.head_commit.modified != 'null'
         run: |
-          # insert appropriate commands for enforcing code coverage report here
-      - name: verify code linting and unit tests
+          # insert code to verify code linting and unit tests
+      - name: Complete job
+        if: github.event_name == 'push' && github.event.head_commit.modified != 'null'
         run: |
-          # insert appropriate commands for verifying code linting and unit tests here
-      - name: complete job
-        run: |
-          # insert appropriate commands for completing job here
+          # insert code to complete job
