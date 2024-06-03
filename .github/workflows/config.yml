@@ -1,11 +1,13 @@
 
 
 
-name: branch-protection
+name: branch-protection.yml
+
 on:
   push:
     branches:
       - main
+
 jobs:
   enforce-branch-rules:
     runs-on: windows-latest
@@ -14,18 +16,17 @@ jobs:
         node-version: [20]
     steps:
       - name: Check for code changes
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-          path: code
+        run: git diff --name-only ${{ github.event.before }} ${{ github.event.after }}
+        shell: bash
       - name: Enforce code coverage report
-        run: |
-          cd code
-          # insert code coverage command here
+        if: steps.change-detection.outputs.changed == 'true'
+        run: npm run coverage
+        shell: bash
       - name: Verify code linting and unit tests
-        run: |
-          cd code
-          # insert linting and unit test commands here
-        if: github.event.commits[0].added != '' || github.event.commits[0].removed != '' || github.event.commits[0].modified != ''
+        if: steps.change-detection.outputs.changed == 'true'
+        run: npm run lint && npm run test
+        shell: bash
       - name: Complete job
-        run: echo "Job completed successfully"
+        if: steps.change-detection.outputs.changed == 'true'
+        run: echo "All checks passed!"
+        shell: bash
