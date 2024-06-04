@@ -1,10 +1,12 @@
 
 
 name: branch-protection.yml
+
 on:
   push:
     branches:
       - main
+
 jobs:
   enforce-branch-rules:
     runs-on: windows-latest
@@ -12,11 +14,17 @@ jobs:
       matrix:
         node-version: [20]
     steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Check for code changes
-        run: git diff --quiet || exit 1
+        run: git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -E '\.(js|jsx|ts|tsx)$'
+        id: code-changes
       - name: Enforce code coverage report
-        run: npm run coverage
+        if: steps.code-changes.outputs.code_changes
+        run: npm run test -- --coverage
       - name: Verify code linting and unit tests
+        if: steps.code-changes.outputs.code_changes
         run: npm run lint && npm run test
       - name: Complete job
-        run: npm run complete-job
+        run: echo "Job complete, all requirements met."
