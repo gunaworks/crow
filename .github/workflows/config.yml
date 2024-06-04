@@ -1,6 +1,7 @@
 
 
-name: branch-protection.yml
+
+name: branch-protection
 
 on:
   push:
@@ -13,16 +14,32 @@ jobs:
     strategy:
       matrix:
         node-version: [20]
+
     steps:
-      - name: Check for code changes
-        if: github.event_name == 'push'
-        run: echo "Checking for code changes..."
-      - name: Enforce code coverage report
-        if: github.event_name == 'push'
-        run: echo "Enforcing code coverage report..."
-      - name: Verify code linting and unit tests
-        if: github.event_name == 'push'
-        run: echo "Verifying code linting and unit tests..."
-      - name: Complete job
-        if: github.event_name == 'push'
-        run: echo "Job completed successfully."
+      - name: check code changes
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          if git diff --name-only HEAD~1 | grep '.*\.\(js\|ts\|tsx\)$'; then
+            echo "Code changes detected."
+          else
+            echo "No code changes detected."
+            exit 1
+          fi
+
+      - name: enforce code coverage report
+        if: success()
+        run: |
+          echo "Enforcing code coverage report."
+          # add commands to enforce code coverage report here
+
+      - name: verify code linting and unit tests
+        if: success()
+        run: |
+          echo "Verifying code linting and unit tests."
+          # add commands to verify code linting and unit tests here
+
+      - name: complete job
+        if: success()
+        run: |
+          echo "Job completed successfully."
+          # add commands to complete job here
