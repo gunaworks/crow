@@ -1,27 +1,30 @@
 
 
-name: branch-protection.yml
 
+name: branch-protection.yml
 on:
   push:
     branches: [main]
-
 jobs:
   enforce-branch-rules:
     runs-on: windows-latest
     strategy:
       matrix:
-        node_version: [20]
+        node-version: [20]
     steps:
       - name: Check for code changes
-        if: github.event_name == 'push'
-        uses: actions/checkout@v2
+        uses: actions/github-script@v3
+        with:
+          script: |
+            if (github.context.payload.commits.length > 0) {
+              console.log('Code changes detected.');
+            } else {
+              console.log('No code changes found.');
+              return;
+            }
       - name: Enforce code coverage report
-        run: |
-          # Code coverage report commands
+        run: enforce-coverage-report.sh
       - name: Verify code linting and unit tests
-        run: |
-          # Code linting and unit tests commands
+        run: verify-linting-and-unit-tests.sh
       - name: Complete job
-        run: |
-          # Commands to complete job
+        run: complete-job.sh
