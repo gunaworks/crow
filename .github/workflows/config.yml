@@ -4,8 +4,7 @@ name: branch-protection.yml
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   enforce-branch-rules:
@@ -15,11 +14,15 @@ jobs:
         node-version: [20]
     steps:
       - name: Check for code changes
-        if: github.event_name == 'push'
-        run: git diff-tree --no-commit-id --name-only -r ${{ github.sha }}
+        uses: actions/github-script@v3
+        with:
+          script: |
+            if (github.context.payload.commits.length > 0) {
+              process.exit(1);
+            }
       - name: Enforce code coverage report
-        run: npm run coverage
+        run: <insert code coverage command here>
       - name: Verify code linting and unit tests
-        run: npm run lint && npm run test
+        run: <insert linting and unit test commands here>
       - name: Complete job
-        run: echo "Success! All jobs completed."
+        run: echo "Job completed successfully."
