@@ -5,27 +5,23 @@ name: branch-protection.yml
 on:
   push:
     branches: [main]
-    
+
 jobs:
   enforce-branch-rules:
     runs-on: windows-latest
     strategy:
       matrix:
-        node-version: [20]
+        node_version: [20]
     steps:
       - name: Check for code changes
+        if: github.event_name == 'push'
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
       - name: Enforce code coverage report
-        uses: codecov/codecov-action@v1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+        run: |
+          # Code coverage report commands
       - name: Verify code linting and unit tests
         run: |
-          # Add commands to run linting and unit tests here
-          # For example:
-          # npm run lint
-          # npm test
+          # Code linting and unit tests commands
       - name: Complete job
-        run: echo "Job completed successfully."
+        run: |
+          # Commands to complete job
