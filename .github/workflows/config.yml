@@ -15,15 +15,27 @@ jobs:
         node-version: [20]
     steps:
       - name: Check for code changes
-        uses: actions/checkout@v2
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        run: |
+          git diff --quiet
+          CHANGES=$?
+          if [ $CHANGES -ne 0 ]; then
+            echo "Code changes detected"
+            # Add enforce rules here
+          fi
+      - uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
         with:
-          fetch-depth: 0
+          node-version: ${{ matrix.node-version }}
       - name: Enforce code coverage report
         run: |
-          # insert code coverage report command here
+          # Add code coverage report script here
       - name: Verify code linting and unit tests
         run: |
-          # insert code linting and unit tests command here
+          # Add code linting and unit tests script here
       - name: Complete job
         run: |
-          # insert job completion command here
+          # Add any additional steps or tasks to complete the job here
+      - name: Success
+        run
