@@ -1,30 +1,30 @@
 
 
-name: branch-protection.yml #naming the YAML file
+name: branch-protection.yml
 
 on:
   push:
     branches:
-      - main #running on push events to the main branch
+      - main
 
 jobs:
   enforce-branch-rules:
-    runs-on: windows-latest #running on windows-latest
+    runs-on: windows-latest
     strategy:
       matrix:
-        node-version: [20] #running on Node.js 20
-
+        node-version: [20.x]
     steps:
-      - name: Check for code changes #checking if the pushed commit includes code changes
-        if: ${{ github.event.push.commits != '' }} #if there are changes
-        run: #enforcing the following rules for successful jobs
-          #take suitable enforce rules(20) based on following information to run successful jobs
-          #requirements: set up job, check for code changes, enforce code coverage report, verify code linting and unit tests, complete job
-          #take your own requirements and generate to run jobs successfully
-          echo "Setting up job..."
-          echo "Checking for code changes..."
-          echo "Enforcing code coverage report..."
-          echo "Verifying code linting and unit tests..."
-          echo "Completing job..."
-      - name: Complete job #completing the job if there are no changes
-        if:
+      - name: Check for code changes
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Enforce code coverage report
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Verify code linting and unit tests
+        run: |
+          # insert code linting and unit tests commands here
+      - name: Complete job
+        run: |
+          # insert code to complete job here
