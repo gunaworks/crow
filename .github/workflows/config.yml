@@ -3,8 +3,7 @@
 name: branch-protection.yml
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 jobs:
   enforce-branch-rules:
     runs-on: windows-latest
@@ -13,16 +12,23 @@ jobs:
         node-version: [20]
     steps:
       - name: Check for code changes
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+        if: github.event_name == 'push'
+        run: |
+          git diff-tree --no-commit-id --name-only -r ${{ github.sha }} > changed_files.txt
+          if [[ -s changed_files.txt ]]; then
+            echo "Code changes detected."
+            echo "Enforcing branch rules..."
+          else
+            echo "No code changes detected."
+            exit 0
       - name: Enforce code coverage report
-        uses: codecov/codecov-action@v2
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+        run: |
+          npm install
+          npm run coverage-report
       - name: Verify code linting and unit tests
         run: |
-          # insert code linting and unit test commands here
+          npm install
+          npm run lint
+          npm run test
       - name: Complete job
-        run: |
-          # insert any additional commands or steps to complete the job here
+        run: echo "Job completed successfully."
