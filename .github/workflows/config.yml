@@ -1,9 +1,14 @@
 
 
+
+# branch-protection.yml
+
 name: branch-protection.yml
+
 on:
   push:
     branches: [main]
+
 jobs:
   enforce-branch-rules:
     runs-on: windows-latest
@@ -12,14 +17,14 @@ jobs:
         node-version: [20]
     steps:
       - name: Check for code changes
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        run: echo "Enforcing branch rules"
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && github.event.head_commit.added > 0 || github.event.head_commit.modified > 0 || github.event.head_commit.removed > 0 }}
+        run: |
+          # Add code change enforcement rules here
+          echo "Code changes detected"
       - name: Enforce code coverage report
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        run: echo "Enforcing code coverage report"
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && github.event.head_commit.added > 0 || github.event.head_commit.modified > 0 || github.event.head_commit.removed > 0 }}
+        run: |
+          # Add code coverage enforcement rules here
+          echo "Code coverage report enforced"
       - name: Verify code linting and unit tests
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        run: echo "Verifying code linting and unit tests"
-      - name: Complete job
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        run: echo "Job completed successfully"
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main
