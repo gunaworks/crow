@@ -1,5 +1,6 @@
 
 
+
 name: branch-protection.yml
 
 on:
@@ -12,19 +13,21 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        node-version: [20.x]
+        node-version: [20]
     steps:
       - name: Check for code changes
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+        if: ${{ github.event_name == 'push' && contains(github.event.head_commit.modified, '${{ github.event.head_commit.added }}') }}
+        run: |
+          # add code change enforcement rules here
+      - name: Set up job
+        run: |
+          # add setup steps here
       - name: Enforce code coverage report
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
+        run: |
+          # add code coverage report enforcement steps here
       - name: Verify code linting and unit tests
         run: |
-          # insert code linting and unit tests commands here
+          # add linting and unit testing verification steps here
       - name: Complete job
         run: |
-          # insert code to complete job here
+          # add steps to complete job here
