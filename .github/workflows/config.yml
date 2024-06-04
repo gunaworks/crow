@@ -1,7 +1,6 @@
 
 
 name: branch-protection.yml
-
 on:
   push:
     branches: [main]
@@ -14,18 +13,14 @@ jobs:
         node-version: [20]
     steps:
       - name: Check for code changes
-        if: ${{ github.event_name == 'push' && contains(github.event.head_commit.modified, 'code') }}
-        run: |
-          # Add code change enforcement rules here
-      - name: Setup job
-        run: |
-          # Add setup commands here
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        run: git diff --name-only ${{ github.event.before }}..${{ github.event.after }}
       - name: Enforce code coverage report
-        run: |
-          # Add code coverage commands here
+        if: ${{ steps.check-code-changes.outputs.has-changes == 'true' }}
+        run: npm run coverage
       - name: Verify code linting and unit tests
-        run: |
-          # Add linting and unit test commands here
+        if: ${{ steps.check-code-changes.outputs.has-changes == 'true' }}
+        run: npm run lint && npm run test
       - name: Complete job
-        run: |
-          # Add completion commands here
+        if: ${{ steps.check-code-changes.outputs.has-changes == 'true' }}
+        run: echo "Completed job successfully"
