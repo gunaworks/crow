@@ -1,10 +1,7 @@
 
 
 name: branch-protection.yml
-on: 
-  push:
-    branches:
-      - main
+on: [push]
 jobs:
   enforce-branch-rules:
     runs-on: windows-latest
@@ -13,7 +10,8 @@ jobs:
         node-version: [20]
     steps:
       - name: Check for code changes
-        uses: actions/checkout@v2
+        run: git diff --quiet || (echo "Code changes detected. Running job." && exit 1)
+        shell: bash
       - name: Enforce code coverage report
         run: npm run coverage
       - name: Verify code linting and unit tests
