@@ -4,8 +4,7 @@ name: branch-protection.yml
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   enforce-branch-rules:
@@ -14,17 +13,21 @@ jobs:
       matrix:
         node-version: [20]
     steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
       - name: Check for code changes
-        run: git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -E '\.(js|jsx|ts|tsx)$'
-        id: code-changes
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep ".js"
       - name: Enforce code coverage report
-        if: steps.code-changes.outputs.code_changes
-        run: npm run test -- --coverage
+        if: ${{ steps.check_code_changes.outputs.has_changes == 'true' }}
+        run: |
+          npm run coverage
+          bash <(curl -s https://codecov.io/bash)
       - name: Verify code linting and unit tests
-        if: steps.code-changes.outputs.code_changes
-        run: npm run lint && npm run test
+        run: |
+          npm run lint
+          npm test
       - name: Complete job
-        run: echo "Job complete, all requirements met."
+        if: ${{ steps.check_code_changes.outputs.has_changes == 'true' }}
+        run: |
+          # code to enforce specific rules based on latest information 
+          # to ensure successful job completion
