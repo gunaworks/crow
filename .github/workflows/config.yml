@@ -1,13 +1,12 @@
 
 
 
-# branch-protection.yml
-
 name: branch-protection.yml
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   enforce-branch-rules:
@@ -17,14 +16,18 @@ jobs:
         node-version: [20]
     steps:
       - name: Check for code changes
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && github.event.head_commit.added > 0 || github.event.head_commit.modified > 0 || github.event.head_commit.removed > 0 }}
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         run: |
-          # Add code change enforcement rules here
-          echo "Code changes detected"
+          git diff --name-only ${{ github.event.before }} ${{ github.event.after }} > changed_files.txt
       - name: Enforce code coverage report
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && github.event.head_commit.added > 0 || github.event.head_commit.modified > 0 || github.event.head_commit.removed > 0 }}
+        if: ${{ steps.check_changes.outputs.changed_files == 'true' }}
         run: |
-          # Add code coverage enforcement rules here
-          echo "Code coverage report enforced"
+          # Insert code coverage report enforcement here
       - name: Verify code linting and unit tests
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main
+        if: ${{ steps.check_changes.outputs.changed_files == 'true' }}
+        run: |
+          # Insert code linting and unit tests here
+      - name: Complete job
+        if: ${{ steps.check_changes.outputs.changed_files == 'true' }}
+        run: |
+          # Insert any additional job steps here
