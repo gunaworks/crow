@@ -1,10 +1,11 @@
 
 
+
 name: branch-protection.yml
 on:
   push:
-    branches: [main]
-
+    branches:
+      - main
 jobs:
   enforce-branch-rules:
     runs-on: windows-latest
@@ -13,14 +14,12 @@ jobs:
         node-version: [20]
     steps:
       - name: Check for code changes
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        run: git diff --name-only ${{ github.event.before }}..${{ github.event.after }}
+        if: github.event_name == 'push'
+        run: |
+          git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -qvE '(.md)|(.mdx)|(.markdown)'
       - name: Enforce code coverage report
-        if: ${{ steps.check-code-changes.outputs.has-changes == 'true' }}
         run: npm run coverage
       - name: Verify code linting and unit tests
-        if: ${{ steps.check-code-changes.outputs.has-changes == 'true' }}
-        run: npm run lint && npm run test
+        run: npm test
       - name: Complete job
-        if: ${{ steps.check-code-changes.outputs.has-changes == 'true' }}
-        run: echo "Completed job successfully"
+        run: echo "Job completed successfully"
