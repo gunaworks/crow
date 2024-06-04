@@ -1,10 +1,10 @@
 
 
-
 name: branch-protection.yml
-on:
+on: 
   push:
-    branches: [main]
+    branches:
+      - main
 jobs:
   enforce-branch-rules:
     runs-on: windows-latest
@@ -13,18 +13,10 @@ jobs:
         node-version: [20]
     steps:
       - name: Check for code changes
-        uses: actions/github-script@v3
-        with:
-          script: |
-            if (github.context.payload.commits.length > 0) {
-              console.log('Code changes detected.');
-            } else {
-              console.log('No code changes found.');
-              return;
-            }
+        uses: actions/checkout@v2
       - name: Enforce code coverage report
-        run: enforce-coverage-report.sh
+        run: npm run coverage
       - name: Verify code linting and unit tests
-        run: verify-linting-and-unit-tests.sh
+        run: npm run lint && npm run test
       - name: Complete job
-        run: complete-job.sh
+        run: echo "Job completed successfully."
