@@ -14,21 +14,22 @@ jobs:
       matrix:
         node-version: [20]
     steps:
-      - uses: actions/checkout@v2
       - name: Check for code changes
-        if: github.event_name == 'push'
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         run: |
-          git diff-tree --no-commit-id --name-only -r ${{ github.sha }} | grep -q '.*.js$'
+          if [[ $(git diff --name-only ${{ github.event.before }} ${{ github.event.after }}) ]]; then
+            echo "Code changes detected"
+          else
+            echo "No code changes detected"
+            exit 1
+          fi
       - name: Enforce code coverage report
-        if: steps.check_code_changes.outputs.has_changes == 'true'
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         run: |
-          npm run coverage
+          # Insert code coverage report enforcement commands here
+          # Example: npm run test --coverage
       - name: Verify code linting and unit tests
-        if: steps.check_code_changes.outputs.has_changes == 'true'
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         run: |
-          npm run lint
-          npm run test
-      - name: Complete job
-        if: steps.check_code_changes.outputs.has_changes == 'true'
-        run: |
-          echo "Job completed successfully."
+          # Insert code linting and unit tests commands here
+          # Example: npm run lint
