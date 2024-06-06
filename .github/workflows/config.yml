@@ -11,26 +11,12 @@ jobs:
       matrix:
         node-version: [20]
     steps:
+      - uses: actions/checkout@v2
       - name: Check for code changes
-        if: github.event_name == 'push'
-        run: |
-          code_changes=$(git diff --name-only ${{ github.base_ref }} ${{ github.head_ref }})
-          if [[ -z "$code_changes" ]]; then
-            echo "No code changes detected."
-          else
-            echo "Code changes detected."
-        shell: bash
+        run: git diff --quiet || exit 1
       - name: Enforce code coverage report
-        if: github.event_name == 'push' && code_changes
-        run: |
-          # Add commands to enforce code coverage report here
-        shell: bash
+        run: coverage run tests.py
       - name: Verify code linting and unit tests
-        if: github.event_name == 'push' && code_changes
-        run: |
-          # Add commands to verify code linting and unit tests here
-        shell: bash
+        run: npm run lint && npm run test
       - name: Complete job
-        if: github.event_name == 'push' && code_changes
-        run: |
-          # Add commands to complete
+        run: echo "Job completed successfully."
