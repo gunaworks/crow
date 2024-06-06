@@ -1,5 +1,6 @@
 
-name: branch-protection.yml
+
+name: branch-protection
 
 on:
   push:
@@ -12,22 +13,13 @@ jobs:
     strategy:
       matrix:
         node-version: [20]
-
     steps:
+      - uses: actions/checkout@v2
       - name: Check for code changes
-        if: github.event_name == 'push'
-        uses: actions/checkout@v2
-
+        run: git diff --quiet || exit 1
       - name: Enforce code coverage report
-        if: steps.changed_files.outputs.files_changed == 'true'
-        run: |
-          # Add code coverage report step here
-
+        run: npm test -- --coverage
       - name: Verify code linting and unit tests
-        if: steps.changed_files.outputs.files_changed == 'true'
-        run: |
-          # Add code linting and unit tests step here
-
+        run: npm run lint && npm test
       - name: Complete job
-        run: |
-          # Add final steps for job completion here
+        run: echo "Job completed successfully"
