@@ -1,10 +1,10 @@
 
-
 name: branch-protection.yml
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   enforce-branch-rules:
@@ -15,29 +15,19 @@ jobs:
 
     steps:
       - name: Check for code changes
-        uses: actions/github-script@v3
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const commits = await github.repos.listCommits({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: context.sha
-            });
-            if (commits.data[0].files.length > 0) {
-              console.log("Code changes detected.");
-            } else {
-              console.log("No code changes detected. Skipping job.");
-              return;
-            }
+        if: github.event_name == 'push'
+        uses: actions/checkout@v2
 
       - name: Enforce code coverage report
-        if: ${{ steps.check_changes.outputs.code_changes == 'true' }}
+        if: steps.changed_files.outputs.files_changed == 'true'
         run: |
-          # Add commands to enforce code coverage report here
+          # Add code coverage report step here
 
       - name: Verify code linting and unit tests
-        if: ${{ steps.check_changes.outputs.code_changes == 'true' }}
+        if: steps.changed_files.outputs.files_changed == 'true'
         run: |
-          # Add commands to verify code linting and unit tests here
+          # Add code linting and unit tests step here
 
+      - name: Complete job
+        run: |
+          # Add final steps for job completion here
