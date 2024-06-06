@@ -1,6 +1,5 @@
 
 
-
 name: branch-protection.yml
 
 on:
@@ -17,27 +16,16 @@ jobs:
     steps:
       - name: Check for code changes
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        run: |
-          git diff --name-only ${{ github.event.before }} ${{ github.event.after }} > changes.txt
-
+        run: git diff --quiet --exit-code --cached || exit 1
       - name: Enforce code coverage report
-        if: ${{ steps.check_changes.outputs.has_changes == 'true' }}
-        run: |
-          npm install
-          npm run coverage
-
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        run: npm run coverage
       - name: Verify code linting and unit tests
-        if: ${{ steps.check_changes.outputs.has_changes == 'true' }}
-        run: |
-          npm install
-          npm run lint
-          npm test
-
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        run: npm run lint && npm run test
       - name: Complete job
-        if: ${{ steps.check_changes.outputs.has_changes == 'true' }}
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         run: |
-          echo "All jobs completed successfully."
-
-      - name: Set up job
-        if: ${{ steps.check_changes.outputs.has_changes == 'false' }}
-       
+          # Set up job
+          # Take suitable enforce rules (20) based on the following information to run successful jobs
+          # Take the latest information to do below
