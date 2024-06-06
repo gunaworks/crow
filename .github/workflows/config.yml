@@ -1,27 +1,36 @@
 
 
-name: branch-protection.yml
-
+name: deploy-multi-env.yml
 on:
   push:
     branches:
       - main
 
 jobs:
-  enforce-branch-rules:
-    runs-on: windows-latest
-    strategy:
-      matrix:
-        node-version: [20.x]
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy to staging and production
     steps:
-      - name: Check for code changes
+      - name: Checkout code from main branch
         uses: actions/checkout@v2
-      - name: Enforce code coverage report
-        run: |
-          # Add code coverage report command here
-      - name: Verify code linting and unit tests
-        run: |
-          # Add code linting and unit tests command here
-      - name: Complete job
-        run: |
-          # Add completion command here
+        with:
+          ref: main
+      - name: Install dependencies
+        run: pip install boto3
+      - name: deploy_staging
+        if: ${{ github.event.branch }} == 'staging'
+        needs: deploy
+        steps:
+          - name: Use AWS credentials stored in ${{ secrets.AWS_STAGING_KEY }} and ${{ secrets.AWS_STAGING_SECRET }}
+            uses: aws-actions/configure-aws-credentials@v1
+            with:
+              aws-access-key-id: ${{ secrets.AWS_STAGING_KEY }}
+              aws-secret-access-key: ${{ secrets.AWS_STAGING_SECRET }}
+              aws-region: us-east-1
+          - name: Configure environment variables for staging deployment using boto3
+            run: python configure_env.py staging
+      - name: deploy_production
+        if: ${{ github.event.branch }} == 'master'
+        needs: deploy
+        steps:
+          - name: Use AWS
