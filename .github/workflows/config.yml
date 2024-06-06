@@ -10,30 +10,28 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    name: Deploy Job
+    name: Deploy to staging and production
+    needs: [deploy_staging, deploy_production]
     steps:
       - name: Checkout code from main branch
         uses: actions/checkout@v2
       - name: Install dependencies
         run: pip install boto3
       - name: deploy_staging
-        if: ${{ github.event.branch }} == 'staging'
+        if: github.ref == 'refs/heads/staging'
         needs: deploy
         steps:
-          - name: Use AWS credentials
+          - name: Use AWS credentials stored in secrets
             uses: aws-actions/configure-aws-credentials@v1
             with:
               aws-access-key-id: ${{ secrets.AWS_STAGING_KEY }}
               aws-secret-access-key: ${{ secrets.AWS_STAGING_SECRET }}
-              aws-region: us-east-1
-          - name: Configure environment variables
-            run: python configure_env.py staging
+          - name: Configure environment variables for staging deployment
+            run: boto3.config(environment='staging')
       - name: deploy_production
-        if: ${{ github.event.branch }} == 'master'
+        if: github.ref == 'refs/heads/master'
         needs: deploy
         steps:
-          - name: Use AWS credentials
+          - name: Use AWS credentials stored in secrets
             uses: aws-actions/configure-aws-credentials@v1
             with:
-              aws-access-key-id: ${{ secrets.AWS_PRODUCTION_KEY }}
-             
