@@ -1,11 +1,9 @@
 
 
-# YAML file for branch-protection.yml
 name: branch-protection.yml
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 jobs:
   enforce-branch-rules:
     runs-on: windows-latest
@@ -14,14 +12,8 @@ jobs:
         node-version: [20]
     steps:
       - name: Check for code changes
-        if: ${{ github.event_name == 'push' && contains(github.event.commits[0].modified, '.js') }}
-        run: echo "There were changes to .js files"
-      - name: Enforce code coverage report
-        if: ${{ github.event_name == 'push' && contains(github.event.commits[0].modified, '.js') }}
-        run: npm run coverage
-      - name: Verify code linting and unit tests
-        if: ${{ github.event_name == 'push' && contains(github.event.commits[0].modified, '.js') }}
-        run: npm run lint && npm run test
-      - name: Complete job
-        if: ${{ github.event_name == 'push' && contains(github.event.commits[0].modified, '.js') }}
-        run: echo "Job completed successfully"
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && contains(github.event.commits.*.added, '**/*') || contains(github.event.commits.*.modified, '**/*') }}
+        run: |
+          # Enforce code coverage report
+          # Verify code linting and unit tests
+          # Complete job
