@@ -1,10 +1,12 @@
 
 
-
 name: branch-protection.yml
+
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+
 jobs:
   enforce-branch-rules:
     runs-on: windows-latest
@@ -12,14 +14,21 @@ jobs:
       matrix:
         node-version: [20]
     steps:
+      - uses: actions/checkout@v2
       - name: Check for code changes
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && contains(github.event.head_commit.modified, 'code') }}
-        run: echo "Code changes detected."
+        if: github.event_name == 'push'
+        run: |
+          git diff-tree --no-commit-id --name-only -r ${{ github.sha }} | grep -q '.*.js$'
       - name: Enforce code coverage report
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && contains(github.event.head_commit.modified, 'code') }}
-        run: echo "Enforcing code coverage report."
+        if: steps.check_code_changes.outputs.has_changes == 'true'
+        run: |
+          npm run coverage
       - name: Verify code linting and unit tests
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && contains(github.event.head_commit.modified, 'code') }}
-        run: echo "Verifying code linting and unit tests."
+        if: steps.check_code_changes.outputs.has_changes == 'true'
+        run: |
+          npm run lint
+          npm run test
       - name: Complete job
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && contains(github
+        if: steps.check_code_changes.outputs.has_changes == 'true'
+        run: |
+          echo "Job completed successfully."
