@@ -1,5 +1,7 @@
 
 
+
+---
 name: deploy-multi-env.yml
 
 on:
@@ -10,28 +12,32 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    name: Deploy to staging and production
-    needs: [deploy_staging, deploy_production]
+    container: python:3.9
     steps:
-      - name: Checkout code from main branch
+      - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          ref: main
       - name: Install dependencies
-        run: pip install boto3
+        run: |
+          pip install boto3
       - name: deploy_staging
-        if: github.ref == 'refs/heads/staging'
+        if: ${{ github.event.branch }} == 'staging'
         needs: deploy
         steps:
-          - name: Use AWS credentials stored in secrets
+          - name: Use AWS credentials
             uses: aws-actions/configure-aws-credentials@v1
             with:
               aws-access-key-id: ${{ secrets.AWS_STAGING_KEY }}
               aws-secret-access-key: ${{ secrets.AWS_STAGING_SECRET }}
-          - name: Configure environment variables for staging deployment
-            run: boto3.config(environment='staging')
+              aws-region: us-east-1
+          - name: Configure environment variables
+            run: |
+              export STAGING_ENV=staging
+              python configure_variables.py
       - name: deploy_production
-        if: github.ref == 'refs/heads/master'
+        if: ${{ github.event.branch }} == 'master'
         needs: deploy
         steps:
-          - name: Use AWS credentials stored in secrets
-            uses: aws-actions/configure-aws-credentials@v1
-            with:
+          - name: Use AWS credentials
+            uses: aws-actions/configure-aws-credentials
