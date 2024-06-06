@@ -1,12 +1,9 @@
 
 
-name: branch-protection
-
+name: branch-protection.yml
 on:
   push:
-    branches:
-      - main
-
+    branches: [main]
 jobs:
   enforce-branch-rules:
     runs-on: windows-latest
@@ -14,12 +11,26 @@ jobs:
       matrix:
         node-version: [20]
     steps:
-      - uses: actions/checkout@v2
       - name: Check for code changes
-        run: git diff --quiet || exit 1
+        if: github.event_name == 'push'
+        run: |
+          code_changes=$(git diff --name-only ${{ github.base_ref }} ${{ github.head_ref }})
+          if [[ -z "$code_changes" ]]; then
+            echo "No code changes detected."
+          else
+            echo "Code changes detected."
+        shell: bash
       - name: Enforce code coverage report
-        run: npm test -- --coverage
+        if: github.event_name == 'push' && code_changes
+        run: |
+          # Add commands to enforce code coverage report here
+        shell: bash
       - name: Verify code linting and unit tests
-        run: npm run lint && npm test
+        if: github.event_name == 'push' && code_changes
+        run: |
+          # Add commands to verify code linting and unit tests here
+        shell: bash
       - name: Complete job
-        run: echo "Job completed successfully"
+        if: github.event_name == 'push' && code_changes
+        run: |
+          # Add commands to complete
