@@ -1,43 +1,35 @@
 
 
 
----
-name: deploy-multi-env.yml
+name: branch-protection.yml
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    container: python:3.9
+  enforce-branch-rules:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        node-version: [20]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        with:
-          ref: main
-      - name: Install dependencies
+      - name: Check for code changes
         run: |
-          pip install boto3
-      - name: deploy_staging
-        if: ${{ github.event.branch }} == 'staging'
-        needs: deploy
-        steps:
-          - name: Use AWS credentials
-            uses: aws-actions/configure-aws-credentials@v1
-            with:
-              aws-access-key-id: ${{ secrets.AWS_STAGING_KEY }}
-              aws-secret-access-key: ${{ secrets.AWS_STAGING_SECRET }}
-              aws-region: us-east-1
-          - name: Configure environment variables
-            run: |
-              export STAGING_ENV=staging
-              python configure_variables.py
-      - name: deploy_production
-        if: ${{ github.event.branch }} == 'master'
-        needs: deploy
-        steps:
-          - name: Use AWS credentials
-            uses: aws-actions/configure-aws-credentials
+          if [[ $(git diff --name-only ${{ github.event.before }} ${{ github.event.after }}) ]]; then
+            echo "Code changes detected"
+          else
+            echo "No code changes detected. Skipping job."
+            exit 0
+          fi
+      - name: Enforce code coverage report
+        run: |
+          # Insert code coverage report enforcement here
+      - name: Verify code linting and unit tests
+        run: |
+          # Insert code linting and unit tests verification here
+      - name: Complete job
+        run: |
+          # Insert any final steps or clean up here
