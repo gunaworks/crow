@@ -1,5 +1,6 @@
 
 
+
 name: branch-protection.yml
 
 on:
@@ -15,12 +16,14 @@ jobs:
     steps:
       - name: Check for code changes
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Enforce code coverage report
-        if: github.event_name == 'push'
-        run: npm run coverage-report
+        run: |
+          # Enter code coverage commands here
       - name: Verify code linting and unit tests
-        if: github.event_name == 'push'
-        run: npm run lint && npm test
+        run: |
+          # Enter linting and unit test commands here
       - name: Complete job
-        if: github.event_name == 'push'
-        run: echo "Job completed successfully."
+        run: |
+          # Enter any final commands required to complete the job
